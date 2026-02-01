@@ -1,0 +1,26 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "auth_service"
+		},
+		{
+			"path": "inventory_service"
+		},
+		{
+			"path": "order_service"
+		},
+		{
+			"path": "payment_service"
+		},
+		{
+			"path": "product_service"
+		},
+		{
+			"path": "infra"
+		}
+	],
+	"settings": {}
+}

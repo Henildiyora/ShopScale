@@ -1,0 +1,48 @@
+services:
+
+  # Message Broker
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: shopscale-rabbitmq
+    ports:
+      - "5672:5672"   # App communication
+      - "15672:15672" # Dashboard (User: guest/guest)
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 30s
+      retries: 5
+
+  # --- DB 1: Core (Auth, Product, Inventory, Payment)
+  postgres-core:
+    image: postgres:15-alpine
+    container_name: shopscale-pg-core
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: core_db
+    volumes:
+      - ./init_core.sql:/docker-entrypoint-initdb.d/init.sql
+
+  # DB 2: Order Shard A (Even IDs)
+  postgres-shard-1:
+    image: postgres:15-alpine
+    container_name: shopscale-pg-shard-1
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: orders_shard_1
+
+  # DB 3: Order Shard B (Odd IDs)
+  postgres-shard-2:
+    image: postgres:15-alpine
+    container_name: shopscale-pg-shard-2
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: orders_shard_2
